@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Architecture overview (epic)
+    url: https://github.com/matvs/through-the-times/blob/main/docs/ARCHITECTURE.md
+    about: Read the modularization plan and dependency graph before picking a ticket.
