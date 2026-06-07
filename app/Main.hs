@@ -1,6 +1,6 @@
 module Main where
 
-import API.Public
+import API
 
 main :: IO ()
 main = do

@@ -1,4 +1,4 @@
-module API.Public where 
+module API (run) where
 
 import UI.Loop
 import Data.Types
