@@ -54,10 +54,19 @@ library
     import:           warnings
 
     -- Modules exported by the library.
-    exposed-modules:  MyLib
+    exposed-modules:
+        API
 
     -- Modules included in this library but not exported.
-    -- other-modules:
+    other-modules:
+        Data.Types
+        Functions.Building
+        Functions.Civilization
+        Functions.Resources
+        Functions.Technology
+        Gameplay.Engine
+        Gameplay.Phase
+        UI.Loop
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
