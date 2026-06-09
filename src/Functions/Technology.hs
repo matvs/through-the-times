@@ -1,2 +1,1 @@
 module Functions.Technology where
-

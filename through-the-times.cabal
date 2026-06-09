@@ -60,6 +60,7 @@ library
     -- Modules included in this library but not exported.
     other-modules:
         Data.Types
+        Functions.Actions
         Functions.Building
         Functions.Civilization
         Functions.Resources
