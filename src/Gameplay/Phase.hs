@@ -24,7 +24,7 @@ actionPhase prevStates as@(ActionState (c :| cs)) = do
     Just action -> handleAction action
   where
     handleAction (Right Revert) = case prevStates of
-      prevState : _ -> actionPhase (drop 1 prevStates) prevState
+      prevState : rest -> actionPhase rest prevState
       [] -> do
         putStrLn "You haven't taken any actions!"
         actionPhase [] as
