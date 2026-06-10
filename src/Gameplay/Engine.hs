@@ -9,12 +9,29 @@ import Gameplay.Phase
 import Prelude hiding (tail, head)
 
 -- NextPhase is a type level function that enforces the state transition.
-handleGameState :: GameState a -> IO (GameState (NextPhase a))
-handleGameState (PoliticsState cs) = pure (ActionState cs)
-handleGameState p@(ActionState cs) = actionPhase [] p
-handleGameState p@(ProductionState _) = pure (productionPhase p)
-handleGameState (CleanUpState (c:|cs)) = pure (PoliticsState (prependList cs (c:|[])))
+finishState :: GameState a -> GameState (NextPhase a)
+finishState (PoliticsState cs) = ActionState cs
+finishState (ActionState cs) = ProductionState cs
+finishState p@(ProductionState _) = productionPhase p
+finishState (CleanUpState (c:|cs)) = PoliticsState (prependList cs (c:|[]))
     
 
 startGame :: GameStatus 'Politics
 startGame = Started (PoliticsState (createCivilization "Jan" :| [createCivilization "Mati"]))
+
+data Response = ChooseAction [AnyAction] | ActionResult (GameState 'Action) | WrongInput | Undo | Done 
+newtype Request = ChosenAction AnyAction
+
+
+actionPhase :: GameState 'Action -> Response
+actionPhase as = ChooseAction (availableActions as)
+
+
+chooseAction :: GameState 'Action -> Request -> Response
+chooseAction as (ChosenAction (AnyGame EndPhase)) = Done
+chooseAction as (ChosenAction (AnyGame Revert)) = Undo
+chooseAction as (ChosenAction (AnyGameplay action)) =
+    case tryAction as action of
+      Success newState -> do
+        ActionResult newState
+      ActionError s -> WrongInput

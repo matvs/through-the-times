@@ -9,6 +9,15 @@ import Functions.Civilization
 
 data ActionError = NotEnoughResources 
 
+data AnyAction where
+  AnyGameplay :: Action 'GameplayAction -> AnyAction 
+  AnyGame :: Action 'GameAction -> AnyAction 
+
+instance Show AnyAction where
+    show (AnyGameplay (Build b)) = "Build " ++ show b
+    show (AnyGame Revert) = "Undo action"
+    show (AnyGame EndPhase) = "End turn"
+
 allBuildings :: [Building]
 allBuildings = [minBound..]
 
@@ -17,11 +26,12 @@ availableBuildings c =
     map Build . filter (\b -> requires b `S.isSubsetOf` technologies c) $ allBuildings
 
 
-defaultActions :: [Action GameAction]
-defaultActions = [Revert, EndPhase]
+defaultActions :: [AnyAction]
+defaultActions = fmap AnyGame [Revert, EndPhase]
 
-availableActions :: GameState 'Action -> [Either (Action GameplayAction) (Action GameAction)]
-availableActions (ActionState (c:|_)) = map Left (availableBuildings c) ++ map Right defaultActions
+
+availableActions :: GameState 'Action -> [AnyAction]
+availableActions (ActionState (c:|_)) = fmap AnyGameplay (availableBuildings c) ++ defaultActions
 
 
 

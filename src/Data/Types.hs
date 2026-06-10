@@ -66,6 +66,7 @@ data Action (a :: ActionType) where
   EndPhase :: Action 'GameAction 
   
 instance Show (Action a) where
+  show :: Action a -> String
   show IncreasePop      = "Increase Pop"
   show (Destroy b)      = "Destroy " ++ show b
   show (Build b)        = "Build " ++ show b
