@@ -19,15 +19,15 @@ finishState p@(CleanUpState _) = cleanUpPhase p
 startGame :: GameStatus 'Politics
 startGame = Started (PoliticsState (createCivilization "Jan" :| [createCivilization "Mati"]))
 
-data Response = ChooseAction [AnyAction] | ActionResult (GameState 'Action) (GameState 'Action) | WrongInput | Undo | Done 
-newtype Request = ChosenAction AnyAction 
+data EngineRequest = ChooseAction [AnyAction] | ActionResult (GameState 'Action) (GameState 'Action) | WrongInput | Undo | Done 
+newtype PlayerResponse = ChosenAction AnyAction 
 
 
-actionPhase :: GameState 'Action -> Response
+actionPhase :: GameState 'Action -> EngineRequest
 actionPhase as = ChooseAction (availableActions as)
 
 
-chooseAction :: GameState 'Action -> Request -> Response
+chooseAction :: GameState 'Action -> PlayerResponse -> EngineRequest
 chooseAction as (ChosenAction (AnyGame EndPhase)) = Done
 chooseAction as (ChosenAction (AnyGame Revert)) = Undo
 chooseAction as (ChosenAction (AnyGameplay action)) =

@@ -24,7 +24,7 @@ loop' (Started gs) = gameLoop gs
 actionLoop :: GameState 'Action -> IO ()
 actionLoop a = actionLoop' (actionPhase a) a []
 
-actionLoop' :: Response -> GameState 'Action -> [GameState 'Action] -> IO ()
+actionLoop' :: EngineRequest -> GameState 'Action -> [GameState 'Action] -> IO ()
 actionLoop' (ChooseAction as) gs past = do
     print gs
     let actions = zip [1 ..] as
