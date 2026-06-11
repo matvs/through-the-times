@@ -21,6 +21,10 @@ createCivilization name =
 production :: Civilization -> Resources
 production = M.unionsWith (+) . map produce . buildings
 
+civilTokens :: Civilization -> Civilization
+civilTokens c = c {resources = M.insert  CivilActionToken (civilTokens' (government c)) (resources c)}
+  where civilTokens' Despot = 5
+
 spend :: Civilization -> Building -> Maybe Civilization
 spend c b = 
   let after = M.unionWith (-) (resources c) (cost b) in

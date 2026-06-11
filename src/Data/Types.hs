@@ -18,7 +18,7 @@ data Building = Mine | Lab | Temple deriving (Show, Enum, Bounded)
 data Technology = Wheel | LabTechnology | MineTechnology | TempleTechnology deriving (Show, Eq, Ord)
 data Government = Despot deriving Show
 data ResourceType = Food | Ore | Science | Culture | Worker 
-                  | Strength | Population | Happiness | ActionToken | PopBank deriving (Show, Eq, Ord)
+                  | Strength | Population | Happiness | CivilActionToken | PopBank deriving (Show, Eq, Ord)
 type Resources = M.Map ResourceType Integer
 
 data Civilization = Civilization {

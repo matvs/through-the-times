@@ -26,6 +26,7 @@ actionLoop a = actionLoop' (actionPhase a) a []
 
 actionLoop' :: Response -> GameState 'Action -> [GameState 'Action] -> IO ()
 actionLoop' (ChooseAction as) gs past = do
+    print gs
     let actions = zip [1 ..] as
     mapM_ print actions
     pick <- getLine
@@ -36,16 +37,19 @@ actionLoop' (ChooseAction as) gs past = do
       Just action -> do
         print action
         actionLoop' (chooseAction gs (ChosenAction action)) gs past
-actionLoop' (ActionResult rs) _ past = do
+actionLoop' (ActionResult old new) _ past = do
   putStrLn "You built it!"
-  actionLoop' (actionPhase rs) rs (rs:past)
+  actionLoop' (actionPhase new) new (old:past)
 -- Should undo exist on the UI level? Probably not.
+actionLoop' Undo a [] = do
+  putStrLn "Can't undo anymore"
+  actionLoop' (actionPhase a) a []
 actionLoop' Undo a (p:past) = do
   putStrLn "Undoing last action"
   actionLoop' (actionPhase p) p past
-actionLoop' WrongInput a past = do
+actionLoop' WrongInput p past = do
   putStrLn "Impossible !"
-  actionLoop a
+  actionLoop' (actionPhase p) p past
 actionLoop' Done gs past = gameLoop (finishState gs)
 
 

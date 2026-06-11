@@ -12,9 +12,9 @@ produce Temple = createResources Culture 1
 
 
 cost :: Building -> Resources
-cost Mine = createResources Ore 2
-cost Lab = createResources Ore 3
-cost Temple = createResources Ore 3
+cost Mine = createMultipleResources [(Ore,2), (CivilActionToken, 1), (Worker, 1)]
+cost Lab = createMultipleResources [(Ore,3), (CivilActionToken, 1), (Worker, 1)]
+cost Temple = createMultipleResources [(Ore,3), (CivilActionToken, 1), (Worker, 1)]
 
 bonus :: Building -> Resources
 bonus Temple = createResources Happiness 5

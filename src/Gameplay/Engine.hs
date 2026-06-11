@@ -13,14 +13,14 @@ finishState :: GameState a -> GameState (NextPhase a)
 finishState (PoliticsState cs) = ActionState cs
 finishState (ActionState cs) = ProductionState cs
 finishState p@(ProductionState _) = productionPhase p
-finishState (CleanUpState (c:|cs)) = PoliticsState (prependList cs (c:|[]))
+finishState p@(CleanUpState _) = cleanUpPhase p
     
 
 startGame :: GameStatus 'Politics
 startGame = Started (PoliticsState (createCivilization "Jan" :| [createCivilization "Mati"]))
 
-data Response = ChooseAction [AnyAction] | ActionResult (GameState 'Action) | WrongInput | Undo | Done 
-newtype Request = ChosenAction AnyAction
+data Response = ChooseAction [AnyAction] | ActionResult (GameState 'Action) (GameState 'Action) | WrongInput | Undo | Done 
+newtype Request = ChosenAction AnyAction 
 
 
 actionPhase :: GameState 'Action -> Response
@@ -33,5 +33,5 @@ chooseAction as (ChosenAction (AnyGame Revert)) = Undo
 chooseAction as (ChosenAction (AnyGameplay action)) =
     case tryAction as action of
       Success newState -> do
-        ActionResult newState
+        ActionResult as newState
       ActionError s -> WrongInput
