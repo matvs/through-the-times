@@ -4,75 +4,70 @@
 
 module Data.Types where
 
-import qualified Data.Set as S
-import qualified Data.Map.Strict as M
 import Data.List.NonEmpty
+import Data.Map (Map)
+import Data.Map.Strict qualified as M
+import Data.Set (Set)
+import Data.Set qualified as S
 
-data ResourceCard = Breakthrough | Reserves deriving Show
-data Politics = Polish deriving Show
-data Card = LeaderCard Leader | ResourceCard ResourceCard | TechnologyCard Technology | PoliticalCard Politics deriving Show
 
-data Leader = Mati deriving Show
 
-data Building = Mine | Lab | Temple deriving (Show, Enum, Bounded)
-data Technology = Wheel | LabTechnology | MineTechnology | TempleTechnology deriving (Show, Eq, Ord)
-data Government = Despot deriving Show
-data ResourceType = Food | Ore | Science | Culture | Worker 
-                  | Strength | Population | Happiness | CivilActionToken | PopBank deriving (Show, Eq, Ord)
-type Resources = M.Map ResourceType Integer
 
-data Civilization = Civilization {
-    name :: String,
-    cards :: [Card],
+data Age = I | II | III
+
+newtype PlayerId = PlayerId Int
+  deriving (Eq, Ord, Show)
+
+data Player = Player
+  { name :: String,
+    civ :: Civilization
+  }
+
+data GameState = GameState
+  { players :: Map PlayerId Player,
+    turnOrder :: [PlayerId],
+    age :: Age
+  }
+
+data Civilization = Civilization
+  { cards :: [Card],
     buildings :: [Building],
-    technologies :: S.Set Technology,
+    technologies :: Set Technology,
     resources :: Resources,
     government :: Government,
     leader :: Maybe Leader
-} deriving Show
+  }
+  deriving (Show)
 
-data GameStatus a = NotStarted | Finished | Started (GameState a) deriving Show
+-- Gameplay
+data ResourceCard = Breakthrough | Reserves deriving (Show)
 
-data Phase = Politics | Action | Production | CleanUp | EndGame deriving (Enum, Show, Eq)
+data Politics = Polish deriving (Show)
 
-type family NextPhase p where
-  NextPhase 'Politics = 'Action
-  NextPhase 'Action = 'Production
-  NextPhase 'Production = 'CleanUp
-  NextPhase 'CleanUp = 'Politics
+data Card = LeaderCard Leader | ResourceCard ResourceCard | TechnologyCard Technology | PoliticalCard Politics deriving (Show)
 
-data GameState (a :: Phase) where
-  PoliticsState :: NonEmpty Civilization -> GameState 'Politics
-  ActionState :: NonEmpty Civilization -> GameState 'Action
-  ProductionState :: NonEmpty Civilization -> GameState 'Production
-  CleanUpState :: NonEmpty Civilization -> GameState 'CleanUp  
+data Leader = Mati deriving (Show)
 
-instance Show (GameState a) where
-  show (PoliticsState civs)    = "PoliticsState " ++ show civs
-  show (ActionState civs)      = "ActionState " ++ show civs
-  show (ProductionState civs)  = "ProductionState " ++ show civs
-  show (CleanUpState civs)     = "CleanUpState " ++ show civs
+data Building = Mine deriving (Show, Enum, Bounded)
 
+data BuildingDef = BuildingDef
+  { cost :: Resources,
+    produces :: Resources,
+    bonus :: Resources,
+    requires :: Set Technology
+  }
 
-data ActionType = GameAction | GameplayAction deriving Show
+data Technology = Wheel | LabTechnology | MineTechnology | TempleTechnology deriving (Show, Eq, Ord)
 
-data Action (a :: ActionType) where 
-  IncreasePop :: Action 'GameplayAction
-  Destroy :: Building -> Action 'GameplayAction
-  Build :: Building -> Action 'GameplayAction
-  Take :: Card -> Action 'GameplayAction
-  Play :: Card -> Action 'GameplayAction
-  Revert :: Action 'GameAction
-  EndPhase :: Action 'GameAction 
-  
-instance Show (Action a) where
-  show :: Action a -> String
-  show IncreasePop      = "Increase Pop"
-  show (Destroy b)      = "Destroy " ++ show b
-  show (Build b)        = "Build " ++ show b
-  show (Take card)      = "Take " ++ show card
-  show (Play card)      = "Play " ++ show card
-  show Revert           = "Revert"
-  show EndPhase         = "EndPhase"
+data Government = Despot deriving (Show)
 
+data ResourceType = Food | Ore | Science | Culture | Worker | Strength | Population | Happiness | CivilActionToken | PopBank deriving (Show, Eq, Ord)
+
+newtype Resources = Resources (M.Map ResourceType Integer) deriving Show
+
+instance Semigroup Resources where
+  (Resources a) <> (Resources b) = Resources (M.unionWith (+) a b)
+instance Monoid Resources where
+    mempty  = Resources M.empty
+    mconcat = foldl' (<>) mempty
 

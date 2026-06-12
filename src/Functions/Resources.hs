@@ -4,14 +4,17 @@ import qualified Data.Map.Strict as M
 
 import Data.Types
 
-createResources :: ResourceType -> Integer -> Resources
-createResources = M.singleton
+resource :: ResourceType -> Integer -> Resources
+resource t n = Resources (M.singleton t n)
 
-createMultipleResources :: [(ResourceType, Integer)] -> Resources
-createMultipleResources x = M.unionsWith (+) (map (uncurry createResources) x)
+minus :: Resources -> Resources -> Resources
+minus (Resources x) (Resources y) = Resources (M.unionWith (-) x y)
 
-civil :: Resources
-civil = M.singleton CivilActionToken 1
+missing :: Resources -> Resources
+missing (Resources x) = Resources (M.filter (<0) x)
 
-ar :: Resources -> Resources -> Resources
-ar = M.unionWith (+) 
+exists :: Resources -> Bool
+exists (Resources x) = not . M.null $ x
+
+canAfford :: Resources -> Resources -> Bool
+canAfford available = exists . missing . minus available
