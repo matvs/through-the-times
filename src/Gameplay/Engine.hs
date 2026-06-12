@@ -12,4 +12,5 @@ data Engine = Engine {
   engineMode :: EngineMode
 }
 
-runEngine = runRule (RuleContext{activePlayer = PlayerId 1})
+
+runEngine = runRule (RuleContext{activePlayer = PlayerId 1}) newGameState (build Mine) 

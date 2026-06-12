@@ -13,8 +13,8 @@ minus (Resources x) (Resources y) = Resources (M.unionWith (-) x y)
 missing :: Resources -> Resources
 missing (Resources x) = Resources (M.filter (<0) x)
 
-exists :: Resources -> Bool
-exists (Resources x) = not . M.null $ x
+emptyResources :: Resources -> Bool
+emptyResources (Resources x) = M.null x
 
 canAfford :: Resources -> Resources -> Bool
-canAfford available = exists . missing . minus available
+canAfford available = emptyResources . missing . minus available

@@ -13,7 +13,7 @@ import Data.Set qualified as S
 
 
 
-data Age = I | II | III
+data Age = A | I | II | III deriving (Show)
 
 newtype PlayerId = PlayerId Int
   deriving (Eq, Ord, Show)
@@ -21,13 +21,13 @@ newtype PlayerId = PlayerId Int
 data Player = Player
   { name :: String,
     civ :: Civilization
-  }
+  } deriving (Show)
 
 data GameState = GameState
   { players :: Map PlayerId Player,
     turnOrder :: [PlayerId],
     age :: Age
-  }
+  } deriving (Show)
 
 data Civilization = Civilization
   { cards :: [Card],
