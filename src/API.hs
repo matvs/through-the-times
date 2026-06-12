@@ -4,4 +4,4 @@ import UI.Loop
 import Data.Types
 import Gameplay.Engine
 
-run = print runEngine
+run = loop

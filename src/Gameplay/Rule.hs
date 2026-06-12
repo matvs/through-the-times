@@ -7,6 +7,7 @@ import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.Reader (ReaderT (runReaderT), ask)
 import Control.Monad.Trans.State (StateT (runStateT), get, modify)
 import Control.Monad.Trans.Writer (WriterT (runWriterT), tell)
+import Data.List.NonEmpty
 import Data.Map
 import Data.Map qualified as M
 import Data.Set (Set)
@@ -15,11 +16,11 @@ import Data.Types
 import Functions.Building
 import Functions.Resources
 
-newtype RuleContext = RuleContext {activePlayer :: PlayerId} deriving Show
+newtype RuleContext = RuleContext {activePlayer :: PlayerId} deriving (Show)
 
-data GameError = InsufficientResources Resources | MissingTechnologies (Set Technology) | PlayerNotFound | Unknown deriving Show
+data GameError = InsufficientResources Resources | MissingTechnologies (Set Technology) | PlayerNotFound | Unknown deriving (Show)
 
-data Event = ResourcesSpent Resources | BuildingBuilt Building deriving Show
+data Event = ResourcesSpent Resources | BuildingBuilt Building deriving (Show)
 
 type RuleM =
   ReaderT
@@ -99,11 +100,12 @@ build building = do
 newGameState :: GameState
 newGameState =
   GameState
-    { players = M.fromList
-        [ (PlayerId 1, Player {name = "", civ = Civilization {resources = resource Ore 10, technologies = S.empty, buildings = [], cards = [], government = Despot, leader = Nothing}})
-        , (PlayerId 2, Player {name = "", civ = Civilization {resources = resource Ore 10, technologies = S.empty, buildings = [], cards = [], government = Despot, leader = Nothing}})
-        ],
-      turnOrder = [PlayerId 1, PlayerId 2],
+    { players =
+        M.fromList
+          [ (PlayerId 1, Player {name = "", civ = Civilization {resources = resource Ore 10, technologies = S.empty, buildings = [], cards = [], government = Despot, leader = Nothing}}),
+            (PlayerId 2, Player {name = "", civ = Civilization {resources = resource Ore 10, technologies = S.empty, buildings = [], cards = [], government = Despot, leader = Nothing}})
+          ],
+      turnOrder = PlayerId 1 :| [PlayerId 2],
       age = I
     }
 

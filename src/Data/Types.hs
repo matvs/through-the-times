@@ -25,7 +25,7 @@ data Player = Player
 
 data GameState = GameState
   { players :: Map PlayerId Player,
-    turnOrder :: [PlayerId],
+    turnOrder :: NonEmpty PlayerId,
     age :: Age
   } deriving (Show)
 
@@ -68,6 +68,7 @@ newtype Resources = Resources (M.Map ResourceType Integer) deriving Show
 instance Semigroup Resources where
   (Resources a) <> (Resources b) = Resources (M.unionWith (+) a b)
 instance Monoid Resources where
+    mempty :: Resources
     mempty  = Resources M.empty
     mconcat = foldl' (<>) mempty
 
